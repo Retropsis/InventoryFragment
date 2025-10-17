@@ -18,7 +18,9 @@ class INVENTORY_API UInv_SpatialInventory : public UInv_InventoryBase
 {
 	GENERATED_BODY()
 
+public:
 	virtual void NativeOnInitialized() override;
+	virtual FSlotAvailabilityResult HasRoomForItem(UInv_ItemComponent* ItemComponent) override;
 
 private:
 	UPROPERTY(meta=(BindWidget))
