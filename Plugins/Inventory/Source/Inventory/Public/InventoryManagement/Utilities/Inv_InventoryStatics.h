@@ -3,7 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Item/Component/Inv_ItemComponent.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Widget/Utiliies/Inv_WidgetUtiliies.h"
 #include "Inv_InventoryStatics.generated.h"
 
 class UInv_InventoryComponent;
@@ -18,4 +20,27 @@ class INVENTORY_API UInv_InventoryStatics : public UBlueprintFunctionLibrary
 public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	static UInv_InventoryComponent* GetInventoryComponent(const APlayerController* PlayerController);
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	static EInv_ItemCategory GetItemCategoryFromItemComponent(const UInv_ItemComponent* ItemComponent);
+
+	template<typename T, typename FuncT>
+	static void ForEach2D(TArray<T>& Array, int32 Index, const FIntPoint& Range2D, int32 GridColumns, const FuncT& Function);
 };
+
+template<typename T, typename FuncT>
+void UInv_InventoryStatics::ForEach2D(TArray<T>& Array, int32 Index, const FIntPoint& Range2D, int32 GridColumns, const FuncT& Function)
+{
+	for (int32 j = 0; j < Range2D.Y; ++j)
+	{
+		for (int32 i = 0; i < Range2D.X; ++i)
+		{
+			const FIntPoint Coordinates = UInv_WidgetUtiliies::GetPositionFromIndex(Index, GridColumns) + FIntPoint(i, j);
+			const int32 TileIndex = UInv_WidgetUtiliies::GetIndexFromPosition(Coordinates, GridColumns);
+			if (Array.IsValidIndex(TileIndex))
+			{
+				Function(Array[TileIndex]);
+			}
+		}
+	}
+}

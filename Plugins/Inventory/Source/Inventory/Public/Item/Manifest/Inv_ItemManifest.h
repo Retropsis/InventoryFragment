@@ -6,6 +6,8 @@
 #include "StructUtils/InstancedStruct.h"
 #include "Inv_ItemManifest.generated.h"
 
+struct FItemFragment;
+
 /*
  * Item Manifest contains all necessary data to create a new item
  */
@@ -19,10 +21,31 @@ public:
 	EInv_ItemCategory GetItemCategory() const { return ItemCategory; }
 	FGameplayTag GetItemType() const { return ItemType; }
 
+	template<typename T> requires std::derived_from<T, FItemFragment>
+	const T* GetFragmentOfTypeWithTag(const FGameplayTag& Tag) const;
+
 private:
+	UPROPERTY(EditAnywhere, Category="Inventory", meta=(ExcludeBaseStruct))
+	TArray<TInstancedStruct<FItemFragment>> Fragments;
+		
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	EInv_ItemCategory ItemCategory{EInv_ItemCategory::None};
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	FGameplayTag ItemType;
 };
+
+template<typename T> requires std::derived_from<T, FItemFragment>
+const T* FItemManifest::GetFragmentOfTypeWithTag(const FGameplayTag& Tag) const
+{
+	for (const TInstancedStruct<FItemFragment>& Fragment : Fragments)
+	{
+		if (const T* FragmentPtr = Fragment.GetPtr<T>())
+		{
+			if (!FragmentPtr->GetFragmentTag().MatchesTagExact(Tag)) continue;
+			return FragmentPtr;
+		}
+	}
+
+	return nullptr;
+}
