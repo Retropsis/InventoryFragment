@@ -2,6 +2,8 @@
 
 
 #include "Item/Inv_InventoryItem.h"
+
+#include "Item/Fragment/ItemFragment.h"
 #include "Net/UnrealNetwork.h"
 
 void UInv_InventoryItem::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -14,4 +16,10 @@ void UInv_InventoryItem::GetLifetimeReplicatedProps(TArray<class FLifetimeProper
 void UInv_InventoryItem::SetItemManifest(const FItemManifest& Manifest)
 {
 	ItemManifest = FInstancedStruct::Make<FItemManifest>(Manifest);
+}
+
+bool UInv_InventoryItem::IsStackable() const
+{
+	const FStackableFragment* StackableFragment = GetItemManifest().GetFragmentOfType<FStackableFragment>();
+	return StackableFragment != nullptr;
 }

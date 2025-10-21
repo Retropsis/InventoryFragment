@@ -22,6 +22,7 @@ public:
 	void SetItemManifest(const FItemManifest& Manifest);
 	const FItemManifest& GetItemManifest() const { return ItemManifest.Get<FItemManifest>(); }
 	FItemManifest& GetItemManifestMutable() { return ItemManifest.GetMutable<FItemManifest>(); }
+	bool IsStackable() const;
 
 private:
 	UPROPERTY(VisibleAnywhere, meta=(BaseStruct="/Script/Inventory.Inv_ItemManifest"), Replicated)

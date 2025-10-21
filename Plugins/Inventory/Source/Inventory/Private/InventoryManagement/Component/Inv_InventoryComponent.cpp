@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "InventoryManagement/Component/Inv_InventoryComponent.h"
-
+#include "Item/Inv_InventoryItem.h"
 #include "Net/UnrealNetwork.h"
 #include "Widget/Inventory/InventoryBase/Inv_InventoryBase.h"
 
@@ -40,6 +40,9 @@ void UInv_InventoryComponent::ConstructInventory()
 void UInv_InventoryComponent::TryAddItem(UInv_ItemComponent* ItemComponent)
 {
 	FSlotAvailabilityResult Result = InventoryMenu->HasRoomForItem(ItemComponent);
+
+	UInv_InventoryItem* FoundItem = InventoryList.FindFirstItemByType(ItemComponent->GetItemManifest().GetItemType());
+	Result.Item = FoundItem;
 	
 	if (Result.TotalRoomToFill == 0)
 	{
