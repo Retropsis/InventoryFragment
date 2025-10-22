@@ -29,6 +29,10 @@ public:
 
 	UFUNCTION()
 	void AddItem(UInv_InventoryItem* Item);
+
+	UFUNCTION()
+	void AddStacks(const FSlotAvailabilityResult& Result);
+	
 	FSlotAvailabilityResult HasRoomForItem(const UInv_ItemComponent* ItemComponent);
 	EInv_ItemCategory GetItemCategory() const { return ItemCategory; }
 

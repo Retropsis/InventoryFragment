@@ -20,6 +20,7 @@ void UInv_InventoryGrid::NativeOnInitialized()
 	ConstructGrid();
 	InventoryComponent = UInv_InventoryStatics::GetInventoryComponent(GetOwningPlayer());
 	InventoryComponent->OnItemAdded.AddDynamic(this, &ThisClass::UInv_InventoryGrid::AddItem);
+	InventoryComponent->OnStackChange.AddDynamic(this, &ThisClass::UInv_InventoryGrid::AddStacks);
 }
 
 void UInv_InventoryGrid::AddItem(UInv_InventoryItem* Item)
@@ -28,6 +29,27 @@ void UInv_InventoryGrid::AddItem(UInv_InventoryItem* Item)
 
 	FSlotAvailabilityResult Result = HasRoomForItem(Item);
 	AddItemToIndices(Result, Item);
+}
+
+void UInv_InventoryGrid::AddStacks(const FSlotAvailabilityResult& Result)
+{
+	if (!MatchesCategory(Result.Item.Get())) return;
+
+	for (const FSlotAvailability& SlotAvailability : Result.SlotAvailabilities)
+	{
+		if (SlotAvailability.bItemAtIndex)
+		{
+			const auto& GridSlot = GridSlots[SlotAvailability.Index];
+			const auto&  SlottedItem = SlottedItems.FindChecked(SlotAvailability.Index);
+			SlottedItem->UpdateStackCount(GridSlot->GetStackCount() + SlotAvailability.AmountToFill);
+			GridSlot->SetStackCount(GridSlot->GetStackCount() + SlotAvailability.AmountToFill);
+		}
+		else
+		{
+			AddItemAtIndex(Result.Item.Get(), SlotAvailability.Index, Result.bStackable, SlotAvailability.AmountToFill);
+			UpdateGridSlots(Result.Item.Get(), SlotAvailability.Index, Result.bStackable, SlotAvailability.AmountToFill);
+		}
+	}
 }
 
 void UInv_InventoryGrid::AddItemToIndices(const FSlotAvailabilityResult& Result, UInv_InventoryItem* NewItem)
