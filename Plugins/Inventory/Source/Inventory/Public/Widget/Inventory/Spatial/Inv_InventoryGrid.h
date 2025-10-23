@@ -7,11 +7,12 @@
 #include "Types/Inv_GridTypes.h"
 #include "Inv_InventoryGrid.generated.h"
 
-class UHoverItem;
+enum class EGridSlotState : uint8;
 struct FGameplayTag;
 struct FGridFragment;
 struct FImageFragment;
 struct FItemManifest;
+class UHoverItem;
 class USlottedItem;
 class UInv_ItemComponent;
 class UInv_InventoryComponent;
@@ -27,6 +28,7 @@ class INVENTORY_API UInv_InventoryGrid : public UUserWidget
 
 public:
 	virtual void NativeOnInitialized() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	UFUNCTION()
 	void AddItem(UInv_InventoryItem* Item);
@@ -68,6 +70,16 @@ private:
 	void AssignHoverItem(UInv_InventoryItem* InventoryItem);
 	void AssignHoverItem(UInv_InventoryItem* InventoryItem, const int32 GridIndex, const int32 PreviousGridIndex);
 	void RemoveItemFromGrid(UInv_InventoryItem* InventoryItem, const int32 GridIndex);
+	void UpdateTileParameters(const FVector2D& CanvasPosition, const FVector2D& MousePosition);
+	FIntPoint CalculateHoveredCoordinates(const FVector2D& CanvasPosition, const FVector2D& MousePosition) const;
+	ETileQuadrant CalculateTileQuadrant(const FVector2D& CanvasPosition, const FVector2D& MousePosition) const;
+	void OnTileParametersUpdated(const FTileParameters& Parameters);
+	FIntPoint CalculateStartingCoordinates(const FIntPoint& Coordinates, const FIntPoint& Dimensions, const ETileQuadrant Quadrant) const;
+	FSpaceQueryResult CheckHoverPosition(const FIntPoint& Position, const FIntPoint& Dimensions);
+	bool CursorExitedCanvas(const FVector2D& BoundaryPosition, const FVector2D& BoundarySize, const FVector2D& Location);
+	void HighlightSlots(const int32 Index, const FIntPoint& Dimensions);
+	void UnHighlightSlots(const int32 Index, const FIntPoint& Dimensions);
+	void ChangeHoverType(const int32 Index, const FIntPoint& Dimensions, EGridSlotState GridSlotState);
 
 	TWeakObjectPtr<UInv_InventoryComponent> InventoryComponent;
 	
@@ -103,4 +115,13 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	float TileSize;
+
+	FTileParameters TileParameters;
+	FTileParameters LastTileParameters;
+	int32 ItemDropIndex{INDEX_NONE};
+	FSpaceQueryResult CurrentQueryResult;
+	bool bMouseWithinCanvas;
+	bool bLastMouseWithinCanvas;
+	int32 LastHighlightedIndex;
+	FIntPoint LastHighlightedDimensions;
 };

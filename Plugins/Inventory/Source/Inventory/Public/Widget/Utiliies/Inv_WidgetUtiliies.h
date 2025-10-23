@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Inv_WidgetUtiliies.generated.h"
 
+class UWidget;
 /**
  * 
  */
@@ -17,4 +18,13 @@ class INVENTORY_API UInv_WidgetUtiliies : public UBlueprintFunctionLibrary
 public:
 	static int32 GetIndexFromPosition(const FIntPoint& Position, const int32 Columns);
 	static FIntPoint GetPositionFromIndex(const int32 Index, const int32 Columns);
+	
+	UFUNCTION(BlueprintCallable, Category="Inventory")
+	static bool IsWithinBounds(const FVector2D& BoundaryPosition, const FVector2D& WidgetSize, const FVector2D& MousePosition);
+
+	UFUNCTION(BlueprintCallable, Category="Inventory")
+	static FVector2D GetWidgetPosition(UWidget* Widget);
+	
+	UFUNCTION(BlueprintCallable, Category="Inventory")
+	static FVector2D GetWidgetSize(UWidget* Widget);
 };

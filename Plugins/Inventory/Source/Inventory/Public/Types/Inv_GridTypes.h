@@ -40,3 +40,48 @@ struct FSlotAvailabilityResult
 	bool bStackable{false};
 	TArray<FSlotAvailability> SlotAvailabilities;
 };
+
+UENUM(BlueprintType)
+enum class ETileQuadrant : uint8
+{
+	TopLeft,
+	TopRight,
+	BottomLeft,
+	BottomRight,
+	None
+};
+
+USTRUCT(BlueprintType)
+struct FTileParameters
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Inventory")
+	FIntPoint Coordinates{};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Inventory")
+	int32 Index{INDEX_NONE};
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Inventory")
+	ETileQuadrant Quadrant{ETileQuadrant::None};
+};
+
+inline bool operator==(const FTileParameters& A, const FTileParameters& B)
+{
+	return A.Coordinates == B.Coordinates && A.Index == B.Index && A.Quadrant == B.Quadrant;
+}
+
+USTRUCT()
+struct FSpaceQueryResult
+{
+	GENERATED_BODY()
+
+	// True if space queried has no item in it
+	bool bHasSpace{false};
+
+	// Valid if there's an item we can swap with
+	TWeakObjectPtr<UInv_InventoryItem> ValidItem = nullptr;
+
+	// Upper Left Index of this valid item
+	int32 UpperLeftIndex{INDEX_NONE};
+};
