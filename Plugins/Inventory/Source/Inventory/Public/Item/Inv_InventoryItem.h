@@ -23,6 +23,7 @@ public:
 	const FItemManifest& GetItemManifest() const { return ItemManifest.Get<FItemManifest>(); }
 	FItemManifest& GetItemManifestMutable() { return ItemManifest.GetMutable<FItemManifest>(); }
 	bool IsStackable() const;
+	bool IsConsumable() const;
 	int32 GetTotalStackCount() const { return TotalStackCount; }
 	void SetTotalStackCount(int32 StackCount) { TotalStackCount = StackCount; }
 

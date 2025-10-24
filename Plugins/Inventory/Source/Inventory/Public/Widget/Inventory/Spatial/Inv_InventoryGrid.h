@@ -7,6 +7,7 @@
 #include "Types/Inv_GridTypes.h"
 #include "Inv_InventoryGrid.generated.h"
 
+class UItemPopUp;
 enum class EGridSlotState : uint8;
 struct FGameplayTag;
 struct FGridFragment;
@@ -47,11 +48,21 @@ public:
 
 	UFUNCTION()
 	void OnGridSlotUnhovered(int32 GridIndex, const FPointerEvent& MouseEvent);
+
+	UFUNCTION()
+	void OnPopUpMenuSplit(int32 SplitAmount, int32 Index);
+	
+	UFUNCTION()
+	void OnPopUpMenuConsume(int32 Index);
+	
+	UFUNCTION()
+	void OnPopUpMenuDrop(int32 Index);
 	
 	FSlotAvailabilityResult HasRoomForItem(const UInv_ItemComponent* ItemComponent);
 	EInv_ItemCategory GetItemCategory() const { return ItemCategory; }
 	void ShowCursor();
 	void HideCursor();
+	void SetOwningCanvas(UCanvasPanel* OwningCanvas);
 
 private:
 	void ConstructGrid();
@@ -103,8 +114,10 @@ private:
 	void ConsumeHoverItemStacks(const int32 ClickedStackCount, const int32 HoveredStackCount, const int32 Index);
 	bool ShouldFillInStack(int32 RoomInClickedSlot, int32 HoveredStackCount) const;
 	void FillInStack(const int32 FillAmount, const int32 Remainder, const int32 Index);
+	void CreateItemPopUp(const int32 GridIndex);
 
 	TWeakObjectPtr<UInv_InventoryComponent> InventoryComponent;
+	TWeakObjectPtr<UCanvasPanel> OwningCanvasPanel;
 	
 	UPROPERTY(EditAnywhere, Category="Inventory", BlueprintReadOnly, meta=(AllowPrivateAccess=true))
 	EInv_ItemCategory ItemCategory;
@@ -130,6 +143,12 @@ private:
 	UPROPERTY()
 	TObjectPtr<UHoverItem> HoverItem;
 	
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	TSubclassOf<UItemPopUp> ItemPopUpClass;
+
+	UPROPERTY()
+	TObjectPtr<UItemPopUp> ItemPopUp;
+	
 	UPROPERTY(EditAnywhere, Category = "Inventory")
 	TSubclassOf<UUserWidget> VisibleCursorWidgetClass;
 
@@ -150,6 +169,9 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	float TileSize;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	FVector2D ItemPopUpOffset;
 
 	FTileParameters TileParameters;
 	FTileParameters LastTileParameters;
