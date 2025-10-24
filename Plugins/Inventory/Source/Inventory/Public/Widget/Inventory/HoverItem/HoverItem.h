@@ -20,14 +20,14 @@ class INVENTORY_API UHoverItem : public UUserWidget
 
 public:
 	void SetImageBrush(const FSlateBrush& Brush) const;
-	void UpdateStackCount(const int32 Count) const;
+	void UpdateStackCount(const int32 Count);
 
 	FGameplayTag GetItemType() const;
 	int32 GetStackCount() const { return StackCount; }
 	bool IsStackable() const { return bIsStackable; }
 	void SetIsStackable(bool bStackable);
 	int32 GetPreviousGrisIndex() const { return PreviousGridIndex; }
-	void SetPreviousGrisIndex(int32 Index) { PreviousGridIndex = Index; }
+	void SetPreviousGridIndex(int32 Index) { PreviousGridIndex = Index; }
 	FIntPoint GetGridDimensions() const { return GridDimensions; }
 	void SetGridDimensions(const FIntPoint& Dimensions) { GridDimensions = Dimensions; }
 	UInv_InventoryItem* GetInventoryItem() const;

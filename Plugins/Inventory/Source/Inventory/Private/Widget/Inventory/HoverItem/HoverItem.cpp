@@ -10,8 +10,9 @@ void UHoverItem::SetImageBrush(const FSlateBrush& Brush) const
 	Image_Icon->SetBrush(Brush);
 }
 
-void UHoverItem::UpdateStackCount(const int32 Count) const
+void UHoverItem::UpdateStackCount(const int32 Count)
 {
+	StackCount = Count;
 	if (Count > 0)
 	{
 		Text_StackCount->SetVisibility(ESlateVisibility::Visible);

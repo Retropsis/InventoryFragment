@@ -38,9 +38,20 @@ public:
 
 	UFUNCTION()
 	void OnSlottedItemClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
+
+	UFUNCTION()
+	void OnGridSlotClicked(int32 GridIndex, const FPointerEvent& MouseEvent);
+
+	UFUNCTION()
+	void OnGridSlotHovered(int32 GridIndex, const FPointerEvent& MouseEvent);
+
+	UFUNCTION()
+	void OnGridSlotUnhovered(int32 GridIndex, const FPointerEvent& MouseEvent);
 	
 	FSlotAvailabilityResult HasRoomForItem(const UInv_ItemComponent* ItemComponent);
 	EInv_ItemCategory GetItemCategory() const { return ItemCategory; }
+	void ShowCursor();
+	void HideCursor();
 
 private:
 	void ConstructGrid();
@@ -80,6 +91,18 @@ private:
 	void HighlightSlots(const int32 Index, const FIntPoint& Dimensions);
 	void UnHighlightSlots(const int32 Index, const FIntPoint& Dimensions);
 	void ChangeHoverType(const int32 Index, const FIntPoint& Dimensions, EGridSlotState GridSlotState);
+	void PutDownOnIndex(const int32 Index);
+	void ClearHoverItem();
+	UUserWidget* GetVisibleCursorWidget();
+	UUserWidget* GetHiddenCursorWidget();
+	bool IsSameStackable(const UInv_InventoryItem* ClickedInventoryItem) const;
+	void SwapWithHoverItem(UInv_InventoryItem* ClickedInventoryItem, const int32 GridIndex);
+	bool ShouldSwapStackCounts(const int32 RoomInClickedSlot, const int32 HoveredStackCount, const int32 MaxStackSize) const;
+	void SwapStackCounts(const int32 ClickedStackCount, const int32 HoveredStackCount, const int32 Index);
+	bool ShouldConsumeHoverItemStacks(int32 RoomInClickedSlot, int32 HoveredStackCount) const;
+	void ConsumeHoverItemStacks(const int32 ClickedStackCount, const int32 HoveredStackCount, const int32 Index);
+	bool ShouldFillInStack(int32 RoomInClickedSlot, int32 HoveredStackCount) const;
+	void FillInStack(const int32 FillAmount, const int32 Remainder, const int32 Index);
 
 	TWeakObjectPtr<UInv_InventoryComponent> InventoryComponent;
 	
@@ -106,6 +129,18 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UHoverItem> HoverItem;
+	
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	TSubclassOf<UUserWidget> VisibleCursorWidgetClass;
+
+	UPROPERTY(EditAnywhere, Category = "Inventory")
+	TSubclassOf<UUserWidget> HiddenCursorWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<UUserWidget> VisibleCursorWidget;
+	
+	UPROPERTY()
+	TObjectPtr<UUserWidget>  HiddenCursorWidget;
 	
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	int32 Rows;
