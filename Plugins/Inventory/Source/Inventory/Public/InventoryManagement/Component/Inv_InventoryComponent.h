@@ -26,6 +26,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	void AddRepSubObj(UObject* SubObj);
 	void ToggleInventoryMenu();
+	UInv_InventoryBase* GetInventoryMenu() const { return InventoryMenu; }
 
 	UFUNCTION(Server, Reliable)
 	void Server_AddNewItem(UInv_ItemComponent* ItemComponent, int32 StackCount);
