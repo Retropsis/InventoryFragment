@@ -35,6 +35,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_DropItem(UInv_InventoryItem* Item, int32 StackCount);
+
+	UFUNCTION(Server, Reliable)
+	void Server_ConsumeItem(UInv_InventoryItem* Item);
 	
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Inventory")
 	void TryAddItem(UInv_ItemComponent* ItemComponent);

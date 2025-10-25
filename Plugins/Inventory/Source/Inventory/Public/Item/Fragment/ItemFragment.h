@@ -4,6 +4,8 @@
 #include "GameplayTagContainer.h"
 #include "ItemFragment.generated.h"
 
+class APlayerController;
+
 USTRUCT(BlueprintType)
 struct FItemFragment
 {
@@ -20,7 +22,7 @@ struct FItemFragment
 	void SetFragmentTag(FGameplayTag Tag) { FragmentTag = Tag; }
 
 private:
-	UPROPERTY(EditAnywhere, Category="Inventory")
+	UPROPERTY(EditAnywhere, Category="Inventory", meta=(Categories="Fragment"))
 	FGameplayTag FragmentTag = FGameplayTag::EmptyTag;
 };
 
@@ -72,4 +74,34 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	int32 StackCount{1};
+};
+
+USTRUCT(BlueprintType)
+struct FConsumableFragment : public FItemFragment
+{
+	GENERATED_BODY()
+
+	virtual void OnConsume(APlayerController* PC) {}	
+};
+
+USTRUCT(BlueprintType)
+struct FHealthPotionFragment : public FConsumableFragment
+{
+	GENERATED_BODY()
+
+	virtual void OnConsume(APlayerController* PC) override;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float HealAmount{ 20.f };
+};
+
+USTRUCT(BlueprintType)
+struct FManaPotionFragment : public FConsumableFragment
+{
+	GENERATED_BODY()
+
+	virtual void OnConsume(APlayerController* PC) override;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float ManaAmount{ 10.f };
 };
