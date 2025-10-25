@@ -63,6 +63,7 @@ public:
 	void ShowCursor();
 	void HideCursor();
 	void SetOwningCanvas(UCanvasPanel* OwningCanvas);
+	void DropItem();
 
 private:
 	void ConstructGrid();

@@ -32,6 +32,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_AddStacksToItem(UInv_ItemComponent* ItemComponent, int32 StackCount, int32 Remainder);
+
+	UFUNCTION(Server, Reliable)
+	void Server_DropItem(UInv_InventoryItem* Item, int32 StackCount);
 	
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category="Inventory")
 	void TryAddItem(UInv_ItemComponent* ItemComponent);
@@ -48,6 +51,7 @@ private:
 	void ConstructInventory();
 	void OpenInventoryMenu();
 	void CloseInventoryMenu();
+	void SpawnDroppedItem(UInv_InventoryItem* Item, int32 StackCount);
 
 	TWeakObjectPtr<APlayerController> OwningController;
 
@@ -61,4 +65,19 @@ private:
 	TObjectPtr<UInv_InventoryBase> InventoryMenu;
 
 	bool bInventoryMenuOpen;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float DropSpawnAngleMin = -85.f;
+	
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float DropSpawnAngleMax = 85.f;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float DropSpawnDistanceMin = 75.f;
+	
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float DropSpawnDistanceMax = 150.f;
+	
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float RelativeSpawnElevation = 70.f;
 };

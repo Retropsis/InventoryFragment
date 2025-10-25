@@ -20,6 +20,7 @@ public:
 	UInv_InventoryItem* Manifest(UObject* NewOuter);
 	EInv_ItemCategory GetItemCategory() const { return ItemCategory; }
 	FGameplayTag GetItemType() const { return ItemType; }
+	void SpawnPickupActor(const UObject* WorldContextObject, const FVector& SpawnLocation, const FRotator& SpawnRotation);
 
 	template<typename T> requires std::derived_from<T, FItemFragment>
 	const T* GetFragmentOfTypeWithTag(const FGameplayTag& Tag) const;
@@ -39,6 +40,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	FGameplayTag ItemType;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	TSubclassOf<AActor> PickupActorClass;
 };
 
 template<typename T> requires std::derived_from<T, FItemFragment>
