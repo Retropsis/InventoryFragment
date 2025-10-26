@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "Widget/Composite/Composite.h"
 #include "ItemDescription.generated.h"
 
 class USizeBox;
@@ -11,7 +11,7 @@ class USizeBox;
  * 
  */
 UCLASS()
-class INVENTORY_API UItemDescription : public UUserWidget
+class INVENTORY_API UItemDescription : public UComposite
 {
 	GENERATED_BODY()
 

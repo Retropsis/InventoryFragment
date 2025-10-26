@@ -2,8 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "StructUtils/InstancedStruct.h"
 #include "ItemFragment.generated.h"
 
+class UCompositeBase;
 class APlayerController;
 
 USTRUCT(BlueprintType)
@@ -18,12 +20,28 @@ struct FItemFragment
 	FItemFragment& operator=(FItemFragment&&) = default;
 	virtual ~FItemFragment() {}
 
+	virtual void Manifest() {}
+	
 	FGameplayTag GetFragmentTag() const { return FragmentTag; }
 	void SetFragmentTag(FGameplayTag Tag) { FragmentTag = Tag; }
 
 private:
 	UPROPERTY(EditAnywhere, Category="Inventory", meta=(Categories="Fragment"))
 	FGameplayTag FragmentTag = FGameplayTag::EmptyTag;
+};
+
+/*
+ * ItemFragment specifically for assimilation into a widget
+ */
+USTRUCT(BlueprintType)
+struct FInventoryItemFragment : public FItemFragment
+{
+	GENERATED_BODY()
+
+	virtual void Assimilate(UCompositeBase* Composite) const;
+
+protected:
+	bool MatchesWidgetTag(const UCompositeBase* Composite) const;
 };
 
 USTRUCT(BlueprintType)
@@ -45,10 +63,11 @@ private:
 };
 
 USTRUCT(BlueprintType)
-struct FImageFragment : public FItemFragment
+struct FImageFragment : public FInventoryItemFragment
 {
 	GENERATED_BODY()
 
+	virtual void Assimilate(UCompositeBase* Composite) const override;
 	UTexture2D* GetIcon() const { return Icon; }
 
 private:
@@ -57,6 +76,61 @@ private:
 
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	FVector2D Dimensions{ 44.f, 44.f };
+};
+
+USTRUCT(BlueprintType)
+struct FTextFragment : public FInventoryItemFragment
+{
+	GENERATED_BODY()
+
+	virtual void Assimilate(UCompositeBase* Composite) const override;
+	void SetText(const FText& Text) { FragmentText = Text; }
+	FText GetText() const { return FragmentText; }
+
+private:
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	FText FragmentText;
+};
+
+USTRUCT(BlueprintType)
+struct FLabeledNumberFragment : public FInventoryItemFragment
+{
+	GENERATED_BODY()
+
+	virtual void Assimilate(UCompositeBase* Composite) const override;
+	virtual void Manifest() override;
+	
+	void SetLabelText(const FText& Text) { Text_Label = Text; }
+	FText GetLabelText() const { return Text_Label; }
+	void SetValue(float NewValue) { Value = NewValue; }
+	float GetValue() const { return Value; }
+
+	bool bRandomizeOnManifest{true};
+
+private:
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	FText Text_Label;
+	
+	UPROPERTY(VisibleAnywhere, Category="Inventory")
+	float Value{0.f};
+	
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float Min{0.f};
+	
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	float Max{0.f};
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	bool bCollapseLabel{false};
+	
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	bool bCollapseValue{false};
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	int32 MinFractionalDigits{1};
+	
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	int32 MaxFractionalDigits{1};
 };
 
 USTRUCT(BlueprintType)
@@ -77,31 +151,40 @@ private:
 };
 
 USTRUCT(BlueprintType)
-struct FConsumableFragment : public FItemFragment
+struct FConsumeModifier : public FLabeledNumberFragment
 {
 	GENERATED_BODY()
 
 	virtual void OnConsume(APlayerController* PC) {}	
+	
 };
 
 USTRUCT(BlueprintType)
-struct FHealthPotionFragment : public FConsumableFragment
+struct FConsumableFragment : public FInventoryItemFragment
+{
+	GENERATED_BODY()
+
+	virtual void Assimilate(UCompositeBase* Composite) const override;
+	virtual void OnConsume(APlayerController* PC);
+	virtual void Manifest() override;
+
+private:
+	UPROPERTY(EditAnywhere, Category="Inventory", meta=(ExcludeBaseStruct))
+	TArray<TInstancedStruct<FConsumeModifier>> ConsumeModifiers;
+};
+
+USTRUCT(BlueprintType)
+struct FHealthPotionFragment : public FConsumeModifier
 {
 	GENERATED_BODY()
 
 	virtual void OnConsume(APlayerController* PC) override;
-
-	UPROPERTY(EditAnywhere, Category="Inventory")
-	float HealAmount{ 20.f };
 };
 
 USTRUCT(BlueprintType)
-struct FManaPotionFragment : public FConsumableFragment
+struct FManaPotionFragment : public FConsumeModifier
 {
 	GENERATED_BODY()
 
 	virtual void OnConsume(APlayerController* PC) override;
-
-	UPROPERTY(EditAnywhere, Category="Inventory")
-	float ManaAmount{ 10.f };
 };

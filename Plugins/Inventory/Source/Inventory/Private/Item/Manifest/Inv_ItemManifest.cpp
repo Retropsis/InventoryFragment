@@ -2,13 +2,30 @@
 #include "Item/Manifest/Inv_ItemManifest.h"
 #include "Item/Inv_InventoryItem.h"
 #include "Item/Component/Inv_ItemComponent.h"
+#include "Item/Fragment/ItemFragment.h"
+#include "Widget/Composite/CompositeBase.h"
 
 UInv_InventoryItem* FItemManifest::Manifest(UObject* NewOuter)
 {
 	UInv_InventoryItem* Item = NewObject<UInv_InventoryItem>(NewOuter, UInv_InventoryItem::StaticClass());
 	Item->SetItemManifest(*this);
 
+	for (auto& Fragment : Item->GetItemManifestMutable().GetFragmentsMutable())
+	{
+		Fragment.GetMutable().Manifest();
+	}
+	ClearFragments();
+
 	return Item;
+}
+
+void FItemManifest::ClearFragments()
+{
+	for (auto& Fragment : Fragments)
+	{
+		Fragment.Reset();
+	}
+	Fragments.Empty();
 }
 
 void FItemManifest::SpawnPickupActor(const UObject* WorldContextObject, const FVector& SpawnLocation, const FRotator& SpawnRotation)
@@ -23,4 +40,16 @@ void FItemManifest::SpawnPickupActor(const UObject* WorldContextObject, const FV
 	check(ItemComponent);
 
 	ItemComponent->InitializeItemManifest(*this);
+}
+
+void FItemManifest::AssimilateInventoryFragments(UCompositeBase* Composite) const
+{
+	const auto& InventoryItemFragments = GetAllFragmentsOfType<FInventoryItemFragment>();
+	for (const auto* Fragment : InventoryItemFragments)
+	{
+		Composite->ApplyFunction([Fragment] (UCompositeBase* Widget)
+		{
+			Fragment->Assimilate(Widget);
+		});
+	}
 }

@@ -6,6 +6,7 @@
 #include "StructUtils/InstancedStruct.h"
 #include "Inv_ItemManifest.generated.h"
 
+class UCompositeBase;
 struct FItemFragment;
 
 /*
@@ -17,10 +18,12 @@ struct INVENTORY_API FItemManifest
 	GENERATED_BODY()
 
 public:
+	TArray<TInstancedStruct<FItemFragment>>& GetFragmentsMutable() { return Fragments; }
 	UInv_InventoryItem* Manifest(UObject* NewOuter);
 	EInv_ItemCategory GetItemCategory() const { return ItemCategory; }
 	FGameplayTag GetItemType() const { return ItemType; }
 	void SpawnPickupActor(const UObject* WorldContextObject, const FVector& SpawnLocation, const FRotator& SpawnRotation);
+	void AssimilateInventoryFragments(UCompositeBase* Composite) const;
 
 	template<typename T> requires std::derived_from<T, FItemFragment>
 	const T* GetFragmentOfTypeWithTag(const FGameplayTag& Tag) const;
@@ -31,7 +34,12 @@ public:
 	template<typename T> requires std::derived_from<T, FItemFragment>
 	T* GetFragmentOfTypeMutable();
 
+	template<typename T> requires std::derived_from<T, FItemFragment>
+	TArray<const T*> GetAllFragmentsOfType() const;
+
 private:
+	void ClearFragments();
+	
 	UPROPERTY(EditAnywhere, Category="Inventory", meta=(ExcludeBaseStruct))
 	TArray<TInstancedStruct<FItemFragment>> Fragments;
 		
@@ -83,4 +91,18 @@ T* FItemManifest::GetFragmentOfTypeMutable()
 		}
 	}
 	return nullptr;
+}
+
+template <typename T> requires std::derived_from<T, FItemFragment>
+TArray<const T*> FItemManifest::GetAllFragmentsOfType() const
+{
+	TArray<const T*> Result;
+	for (const TInstancedStruct<FItemFragment>& Fragment : Fragments)
+	{
+		if (const T* FragmentPtr = Fragment.GetPtr<T>())
+		{
+			Result.Add(FragmentPtr);
+		}
+	}
+	return Result;
 }
