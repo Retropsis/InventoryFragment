@@ -153,6 +153,18 @@ void UInv_InventoryComponent::Server_ConsumeItem_Implementation(UInv_InventoryIt
 	}
 }
 
+void UInv_InventoryComponent::Server_EquippedSlottedItemClicked_Implementation(UInv_InventoryItem* ItemToEquip, UInv_InventoryItem* ItemToUnequip)
+{
+	Multicast_EquippedSlottedItemClicked(ItemToEquip, ItemToUnequip);
+}
+
+void UInv_InventoryComponent::Multicast_EquippedSlottedItemClicked_Implementation(UInv_InventoryItem* ItemToEquip, UInv_InventoryItem* ItemToUnequip)
+{
+	// EquipmentComponent listen to Equip/Unequip delegates
+	OnItemEquipped.Broadcast(ItemToEquip);
+	OnItemUnequipped.Broadcast(ItemToUnequip);
+}
+
 void UInv_InventoryComponent::ToggleInventoryMenu()
 {
 	if (bInventoryMenuOpen)
@@ -163,6 +175,7 @@ void UInv_InventoryComponent::ToggleInventoryMenu()
 	{
 		OpenInventoryMenu();
 	}
+	OnInventoryMenuToggled.Broadcast(bInventoryMenuOpen);
 }
 
 void UInv_InventoryComponent::OpenInventoryMenu()

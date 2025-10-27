@@ -3,10 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Components/Button.h"
+#include "Item/Inv_InventoryItem.h"
 #include "Widget/Inventory/InventoryBase/Inv_InventoryBase.h"
 #include "Inv_SpatialInventory.generated.h"
 
+class UEquippedSlottedItem;
+struct FGameplayTag;
+class UEquippedGridSlot;
 class UItemDescription;
 class UCanvasPanel;
 class UButton;
@@ -28,6 +33,8 @@ public:
 	virtual void OnItemHovered(UInv_InventoryItem* Item) override;
 	virtual void OnItemUnhovered() override;
 	virtual bool HasHoverItem() const override;
+	virtual UHoverItem* GetHoverItem() const override;
+	virtual float GetTileSize() const override;
 
 private:
 	UPROPERTY(meta=(BindWidget))
@@ -62,10 +69,11 @@ private:
 
 	FTimerHandle ItemDescriptionTimer;
 
+	UPROPERTY()
+	TArray<TObjectPtr<UEquippedGridSlot>> EquippedGridSlots;
+
 	UPROPERTY(EditAnywhere, Category="Inventory")
 	float ItemDescriptionDelay{ .5f };
-
-	UItemDescription* GetItemDescription();
 
 	UFUNCTION()
 	void ShowEquippables();
@@ -75,10 +83,23 @@ private:
 	
 	UFUNCTION()
 	void ShowCraftables();
+
+	UFUNCTION()
+	void EquippedGridSlotClicked(UEquippedGridSlot* EquippedGridSlot, const FGameplayTag& EquipmentType);
+	
+	UFUNCTION()
+	void EquippedSlottedItemClicked(UEquippedSlottedItem* EquippedSlottedItem);
 	
 	void DisableButton(UButton* Button);
 	void SetActiveGrid(UInv_InventoryGrid* Grid, UButton* Button);
 	void SetItemDescriptionSizeAndPosition(UItemDescription* Description, UCanvasPanel* Canvas) const;
+	UItemDescription* GetItemDescription();
+	bool CanEquipHoverItem(UEquippedGridSlot* EquippedGridSlot, const FGameplayTag& EquipmentType) const;
+	UEquippedGridSlot* FindSlotWithEquippedItem(UInv_InventoryItem* EquippedItem) const;
+	void ClearSlotOfItem(UEquippedGridSlot* EquippedGridSlot);
+	void RemoveEquippedSlottedItem(UEquippedSlottedItem* EquippedSlottedItem);
+	void MakeEquippedSlottedItem(UEquippedSlottedItem* EquippedSlottedItem, UEquippedGridSlot* EquippedGridSlot, UInv_InventoryItem* ItemToEquip);
+	void BroadcastSlotClickedDelegates(UInv_InventoryItem* ItemToEquip, UInv_InventoryItem* ItemToUnequip) const;
 
 	TWeakObjectPtr<UInv_InventoryGrid> ActiveGrid;
 };

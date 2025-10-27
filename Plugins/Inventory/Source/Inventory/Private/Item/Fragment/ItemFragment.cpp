@@ -104,3 +104,47 @@ void FManaPotionFragment::OnConsume(APlayerController* PC)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Refilled for %f MP"), GetValue()));	
 }
+
+void FStrengthModifier::OnEquip(APlayerController* PC)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Strength increased by %f"), GetValue()));	
+}
+
+void FStrengthModifier::OnUnequip(APlayerController* PC)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Strength decreased by %f"), GetValue()));	
+}
+
+void FEquipmentFragment::Assimilate(UCompositeBase* Composite) const
+{
+	FInventoryItemFragment::Assimilate(Composite);
+	for (const auto& Modifier : EquipmentModifiers)
+	{
+		const auto& ModRef = Modifier.Get();
+		ModRef.Assimilate(Composite);
+	}
+}
+
+void FEquipmentFragment::OnEquip(APlayerController* PC)
+{
+	if (bEquipped) return;
+	bEquipped = true;
+	
+	for (auto& Modifier : EquipmentModifiers)
+	{
+		auto& ModRef = Modifier.GetMutable();
+		ModRef.OnEquip(PC);
+	}
+}
+
+void FEquipmentFragment::OnUnequip(APlayerController* PC)
+{
+	if (!bEquipped) return;
+	bEquipped = false;
+	
+	for (auto& Modifier : EquipmentModifiers)
+	{
+		auto& ModRef = Modifier.GetMutable();
+		ModRef.OnUnequip(PC);
+	}
+}

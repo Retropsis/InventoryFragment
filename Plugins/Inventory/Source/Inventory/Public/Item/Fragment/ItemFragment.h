@@ -150,13 +150,15 @@ private:
 	int32 StackCount{1};
 };
 
+/*
+ * Consumables
+ */
 USTRUCT(BlueprintType)
 struct FConsumeModifier : public FLabeledNumberFragment
 {
 	GENERATED_BODY()
 
 	virtual void OnConsume(APlayerController* PC) {}	
-	
 };
 
 USTRUCT(BlueprintType)
@@ -187,4 +189,41 @@ struct FManaPotionFragment : public FConsumeModifier
 	GENERATED_BODY()
 
 	virtual void OnConsume(APlayerController* PC) override;
+};
+
+/*
+ * Equippables
+ */
+USTRUCT()
+struct FEquipmentModifier : public FLabeledNumberFragment
+{
+	GENERATED_BODY()
+
+	virtual void OnEquip(APlayerController* PC) {}
+	virtual void OnUnequip(APlayerController* PC) {}
+};
+
+USTRUCT()
+struct FStrengthModifier : public FEquipmentModifier
+{
+	GENERATED_BODY()
+
+	virtual void OnEquip(APlayerController* PC) override;
+	virtual void OnUnequip(APlayerController* PC) override;
+};
+
+USTRUCT(BlueprintType)
+struct FEquipmentFragment : public FInventoryItemFragment
+{
+	GENERATED_BODY()
+
+	virtual void Assimilate(UCompositeBase* Composite) const override;
+	void OnEquip(APlayerController* PC);
+	void OnUnequip(APlayerController* PC);
+	
+	bool bEquipped{false};
+
+private:
+	UPROPERTY(EditAnywhere, Category="Inventory"/*, meta=(ExcludeBaseStruct)*/)
+	TArray<TInstancedStruct<FEquipmentModifier>> EquipmentModifiers;
 };

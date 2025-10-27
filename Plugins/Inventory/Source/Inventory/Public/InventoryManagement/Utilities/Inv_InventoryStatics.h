@@ -8,6 +8,8 @@
 #include "Widget/Utiliies/Inv_WidgetUtiliies.h"
 #include "Inv_InventoryStatics.generated.h"
 
+class UInv_InventoryBase;
+class UHoverItem;
 class UInv_InventoryComponent;
 /**
  * 
@@ -29,7 +31,13 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	static void ItemUnhovered(APlayerController* PC);
-
+	
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	static UHoverItem* GetHoverItem(APlayerController* PC);
+	
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	static UInv_InventoryBase* GetInventoryWidget(APlayerController* PC);
+	
 	template<typename T, typename FuncT>
 	static void ForEach2D(TArray<T>& Array, int32 Index, const FIntPoint& Range2D, int32 GridColumns, const FuncT& Function);
 };

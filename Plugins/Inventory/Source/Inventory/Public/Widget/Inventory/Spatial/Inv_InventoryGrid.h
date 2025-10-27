@@ -58,6 +58,9 @@ public:
 	UFUNCTION()
 	void OnPopUpMenuDrop(int32 Index);
 	
+	UFUNCTION()
+	void OnInventoryMenuToggled(bool bOpen);
+	
 	FSlotAvailabilityResult HasRoomForItem(const UInv_ItemComponent* ItemComponent);
 	EInv_ItemCategory GetItemCategory() const { return ItemCategory; }
 	void ShowCursor();
@@ -65,12 +68,17 @@ public:
 	void SetOwningCanvas(UCanvasPanel* OwningCanvas);
 	void DropItem();
 	bool HasHoverItem();
+	void ClearHoverItem();
+	UHoverItem* GetHoverItem() const { return HoverItem; }
+	float GetTileSize() const { return TileSize; }
+	void AssignHoverItem(UInv_InventoryItem* InventoryItem);
+	void OnHide();
 
 private:
 	void ConstructGrid();
 	bool MatchesCategory(const UInv_InventoryItem* Item) const;
-	FSlotAvailabilityResult HasRoomForItem(const UInv_InventoryItem* InventoryItem);
-	FSlotAvailabilityResult HasRoomForItem(const FItemManifest& ItemManifest);
+	FSlotAvailabilityResult HasRoomForItem(const UInv_InventoryItem* InventoryItem, const int32 StackAmountOverride = -1);
+	FSlotAvailabilityResult HasRoomForItem(const FItemManifest& ItemManifest, int32 StackAmountOverride = -1);
 	FIntPoint GetItemDimensions(const FItemManifest& ItemManifest) const;
 	void AddItemToIndices(const FSlotAvailabilityResult& Result, UInv_InventoryItem* NewItem);
 	void AddItemAtIndex(UInv_InventoryItem* Item, const int32 Index, const bool bStackable, const int32 StackAmount);
@@ -91,7 +99,6 @@ private:
 	bool IsRightClick(const FPointerEvent& MouseEvent) const;
 	bool IsLeftClick(const FPointerEvent& MouseEvent) const;
 	void PickUp(UInv_InventoryItem* ClickedInventoryItem, const int32 GridIndex);
-	void AssignHoverItem(UInv_InventoryItem* InventoryItem);
 	void AssignHoverItem(UInv_InventoryItem* InventoryItem, const int32 GridIndex, const int32 PreviousGridIndex);
 	void RemoveItemFromGrid(UInv_InventoryItem* InventoryItem, const int32 GridIndex);
 	void UpdateTileParameters(const FVector2D& CanvasPosition, const FVector2D& MousePosition);
@@ -105,7 +112,6 @@ private:
 	void UnHighlightSlots(const int32 Index, const FIntPoint& Dimensions);
 	void ChangeHoverType(const int32 Index, const FIntPoint& Dimensions, EGridSlotState GridSlotState);
 	void PutDownOnIndex(const int32 Index);
-	void ClearHoverItem();
 	UUserWidget* GetVisibleCursorWidget();
 	UUserWidget* GetHiddenCursorWidget();
 	bool IsSameStackable(const UInv_InventoryItem* ClickedInventoryItem) const;
@@ -117,6 +123,7 @@ private:
 	bool ShouldFillInStack(int32 RoomInClickedSlot, int32 HoveredStackCount) const;
 	void FillInStack(const int32 FillAmount, const int32 Remainder, const int32 Index);
 	void CreateItemPopUp(const int32 GridIndex);
+	void PutHoverItemBack();
 
 	TWeakObjectPtr<UInv_InventoryComponent> InventoryComponent;
 	TWeakObjectPtr<UCanvasPanel> OwningCanvasPanel;
