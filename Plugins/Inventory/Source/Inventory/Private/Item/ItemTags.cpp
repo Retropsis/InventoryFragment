@@ -8,18 +8,31 @@ namespace GameItems
 	{
 		namespace Weapons
 		{
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Axe, "GameItems.Equipment.Weapons.Axe", "Axe");
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Sword, "GameItems.Equipment.Weapons.Sword", "Sword");
+			UE_DEFINE_GAMEPLAY_TAG(Axe, "GameItems.Equipment.Weapons.Axe");
+			UE_DEFINE_GAMEPLAY_TAG(Sword, "GameItems.Equipment.Weapons.Sword");
+			UE_DEFINE_GAMEPLAY_TAG(Knife, "GameItems.Equipment.Weapons.Knife")
+			UE_DEFINE_GAMEPLAY_TAG(Bloodthorn, "GameItems.Equipment.Weapons.Bloodthorn")
+			UE_DEFINE_GAMEPLAY_TAG(NightsEdge, "GameItems.Equipment.Weapons.NightsEdge")
+			UE_DEFINE_GAMEPLAY_TAG(Shadowbane, "GameItems.Equipment.Weapons.Shadowbane")
+			UE_DEFINE_GAMEPLAY_TAG(Staff, "GameItems.Equipment.Weapons.Staff")
 		}
 		
 		namespace Cloaks
 		{
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(RedCloak, "GameItems.Equipment.Cloaks.RedCloak", "RedCloak");
+			UE_DEFINE_GAMEPLAY_TAG(RedCloak, "GameItems.Equipment.Cloaks.RedCloak");
+			UE_DEFINE_GAMEPLAY_TAG(BlueCloak, "GameItems.Equipment.Cloaks.BlueCloak");
+			UE_DEFINE_GAMEPLAY_TAG(GreenCloak, "GameItems.Equipment.Cloaks.GreenCloak")
+			UE_DEFINE_GAMEPLAY_TAG(YellowCloak, "GameItems.Equipment.Cloaks.YellowCloak")
+			UE_DEFINE_GAMEPLAY_TAG(DarkGrayCloak, "GameItems.Equipment.Cloaks.DarkGrayCloak")
 		}
 		
 		namespace Masks
 		{
-			UE_DEFINE_GAMEPLAY_TAG_COMMENT(SteelMask, "GameItems.Equipment.Masks.SteelMask", "SteelMask");
+			UE_DEFINE_GAMEPLAY_TAG(SteelMask, "GameItems.Equipment.Masks.SteelMask");
+			UE_DEFINE_GAMEPLAY_TAG(GreenMask, "GameItems.Equipment.Masks.GreenMask");
+			UE_DEFINE_GAMEPLAY_TAG(BlueMask, "GameItems.Equipment.Masks.BlueMask")
+			UE_DEFINE_GAMEPLAY_TAG(YellowMask, "GameItems.Equipment.Masks.YellowMask")
+			UE_DEFINE_GAMEPLAY_TAG(GrayMask, "GameItems.Equipment.Masks.GrayMask")
 		}
 	}
 
@@ -29,23 +42,23 @@ namespace GameItems
 		{
 			namespace Red
 			{
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Small, "GameItems.Consumable.Potions.Red.Small", "Small");
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Large, "GameItems.Consumable.Potions.Red.Large", "Large");
+				UE_DEFINE_GAMEPLAY_TAG(Small, "GameItems.Consumable.Potions.Red.Small");
+				UE_DEFINE_GAMEPLAY_TAG(Large, "GameItems.Consumable.Potions.Red.Large");
 			}
 			
 			namespace Blue
 			{
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Small, "GameItems.Consumable.Potions.Blue.Small", "Small");
-				UE_DEFINE_GAMEPLAY_TAG_COMMENT(Large, "GameItems.Consumable.Potions.Blue.Large", "Large");
+				UE_DEFINE_GAMEPLAY_TAG(Small, "GameItems.Consumable.Potions.Blue.Small");
+				UE_DEFINE_GAMEPLAY_TAG(Large, "GameItems.Consumable.Potions.Blue.Large");
 			}
 		}
 	}
 	
 	namespace Craftable
 	{
-		UE_DEFINE_GAMEPLAY_TAG_COMMENT(FireFernFruit, "GameItems.Craftable.FireFernFruit", "FireFernFruit");
-		UE_DEFINE_GAMEPLAY_TAG_COMMENT(LuminDaisy, "GameItems.Craftable.LuminDaisy", "LuminDaisy");
-		UE_DEFINE_GAMEPLAY_TAG_COMMENT(ScorchPetalBlossom, "GameItems.Craftable.ScorchPetalBlossom", "ScorchPetalBlossom");
+		UE_DEFINE_GAMEPLAY_TAG(FireFernFruit, "GameItems.Craftable.FireFernFruit");
+		UE_DEFINE_GAMEPLAY_TAG(LuminDaisy, "GameItems.Craftable.LuminDaisy");
+		UE_DEFINE_GAMEPLAY_TAG(ScorchPetalBlossom, "GameItems.Craftable.ScorchPetalBlossom");
 	}
 }
 

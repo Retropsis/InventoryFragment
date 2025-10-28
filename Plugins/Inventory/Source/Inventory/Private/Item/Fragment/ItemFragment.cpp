@@ -1,5 +1,7 @@
 
 #include "Item/Fragment/ItemFragment.h"
+
+#include "EquipmentManagement/EquipActor/EquipActor.h"
 #include "Widget/Composite/CompositeBase.h"
 #include "Widget/Composite/Leaf_Image.h"
 #include "Widget/Composite/Leaf_LabeledValue.h"
@@ -115,6 +117,26 @@ void FStrengthModifier::OnUnequip(APlayerController* PC)
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Strength decreased by %f"), GetValue()));	
 }
 
+void FArmorModifier::OnEquip(APlayerController* PC)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Item equipped. Armor increased by: %f"), GetValue()));
+}
+
+void FArmorModifier::OnUnequip(APlayerController* PC)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Item unequipped. Armor decreased by: %f"), GetValue()));
+}
+
+void FDamageModifier::OnEquip(APlayerController* PC)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Item equipped. Damage increased by: %f"), GetValue()));
+}
+
+void FDamageModifier::OnUnequip(APlayerController* PC)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Item equipped. Damage increased by: %f"), GetValue()));
+}
+
 void FEquipmentFragment::Assimilate(UCompositeBase* Composite) const
 {
 	FInventoryItemFragment::Assimilate(Composite);
@@ -122,6 +144,16 @@ void FEquipmentFragment::Assimilate(UCompositeBase* Composite) const
 	{
 		const auto& ModRef = Modifier.Get();
 		ModRef.Assimilate(Composite);
+	}
+}
+
+void FEquipmentFragment::Manifest()
+{
+	FInventoryItemFragment::Manifest();
+	for (auto& Modifier : EquipmentModifiers)
+	{
+		auto& ModRef = Modifier.GetMutable();
+		ModRef.Manifest();
 	}
 }
 
@@ -147,4 +179,27 @@ void FEquipmentFragment::OnUnequip(APlayerController* PC)
 		auto& ModRef = Modifier.GetMutable();
 		ModRef.OnUnequip(PC);
 	}
+}
+
+AEquipActor* FEquipmentFragment::SpawnAttachedActor(USkeletalMeshComponent* AttachMesh) const
+{
+	if (!IsValid(EquipActorClass) || !IsValid(AttachMesh)) return nullptr;
+
+	AEquipActor* SpawnActor = AttachMesh->GetWorld()->SpawnActor<AEquipActor>(EquipActorClass);
+	SpawnActor->AttachToComponent(AttachMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketAttachPoint);
+	
+	return SpawnActor;
+}
+
+void FEquipmentFragment::DestroyAttachedActor() const
+{
+	if (EquippedActor.IsValid())
+	{
+		EquippedActor->Destroy();
+	}
+}
+
+void FEquipmentFragment::SetEquippedActor(AEquipActor* EquipActor)
+{
+	EquippedActor = EquipActor;
 }

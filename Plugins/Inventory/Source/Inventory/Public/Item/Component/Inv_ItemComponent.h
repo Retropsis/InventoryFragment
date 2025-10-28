@@ -19,6 +19,7 @@ public:
 
 	void InitializeItemManifest(FItemManifest CopyOfItemManifest);
 	FItemManifest GetItemManifest() const { return ItemManifest; }
+	FItemManifest& GetItemManifestMutable() { return ItemManifest; }
 	FString GetPickupMessage() const { return PickupMessage; }
 	void PickedUp();
 

@@ -5,6 +5,7 @@
 #include "StructUtils/InstancedStruct.h"
 #include "ItemFragment.generated.h"
 
+class AEquipActor;
 class UCompositeBase;
 class APlayerController;
 
@@ -203,8 +204,26 @@ struct FEquipmentModifier : public FLabeledNumberFragment
 	virtual void OnUnequip(APlayerController* PC) {}
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FStrengthModifier : public FEquipmentModifier
+{
+	GENERATED_BODY()
+
+	virtual void OnEquip(APlayerController* PC) override;
+	virtual void OnUnequip(APlayerController* PC) override;
+};
+
+USTRUCT(BlueprintType)
+struct FArmorModifier : public FEquipmentModifier
+{
+	GENERATED_BODY()
+
+	virtual void OnEquip(APlayerController* PC) override;
+	virtual void OnUnequip(APlayerController* PC) override;
+};
+
+USTRUCT(BlueprintType)
+struct FDamageModifier : public FEquipmentModifier
 {
 	GENERATED_BODY()
 
@@ -218,12 +237,30 @@ struct FEquipmentFragment : public FInventoryItemFragment
 	GENERATED_BODY()
 
 	virtual void Assimilate(UCompositeBase* Composite) const override;
+	virtual void Manifest() override;
 	void OnEquip(APlayerController* PC);
 	void OnUnequip(APlayerController* PC);
+	AEquipActor* SpawnAttachedActor(USkeletalMeshComponent* AttachMesh) const;
+	void DestroyAttachedActor() const;
+	FGameplayTag GetEquipmentType() const { return EquipmentType; }
+	void SetEquippedActor(AEquipActor* EquipActor);
 	
 	bool bEquipped{false};
 
 private:
 	UPROPERTY(EditAnywhere, Category="Inventory"/*, meta=(ExcludeBaseStruct)*/)
 	TArray<TInstancedStruct<FEquipmentModifier>> EquipmentModifiers;
+	
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	TSubclassOf<AEquipActor> EquipActorClass = nullptr;
+
+	TWeakObjectPtr<AEquipActor> EquippedActor = nullptr;
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	FName SocketAttachPoint{ NAME_None };
+
+	UPROPERTY(EditAnywhere, Category="Inventory")
+	FGameplayTag EquipmentType = FGameplayTag::EmptyTag;
 };
+
+

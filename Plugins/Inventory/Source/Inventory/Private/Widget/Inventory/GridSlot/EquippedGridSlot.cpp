@@ -35,6 +35,8 @@ void UEquippedGridSlot::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 	UHoverItem* HoverItem = UInv_InventoryStatics::GetHoverItem(GetOwningPlayer());
 	if (!IsValid(HoverItem)) return;
 
+	if (IsValid(EquippedSlottedItem)) return;
+
 	if (HoverItem->GetItemType().MatchesTag(EquipmentType))
 	{
 		SetUnoccupiedTexture();
